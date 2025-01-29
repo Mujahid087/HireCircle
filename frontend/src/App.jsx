@@ -1,8 +1,33 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Navbar from "./components/shared/Navbar";
+import Login from "./components/auth/Login";
+import Signup from "./components/auth/Signup";
+import Home from "./components/Home";
+
+const appRouter = createBrowserRouter([
+  {
+    path: '/',
+    element: <Home />
+  },
+  {
+    path:'/login',
+    element:<Login/>
+  },
+  {
+    path:'/signup',
+    element:<Signup/>
+  }
+]
+)
 const App = () => {
   return (
-    <div className="bg-blue-500 p-5 text-white text-center">
-      <h1 className="text-3xl">Hello, Tailwind CSS!</h1>
-    </div>
+
+   <>
+   <RouterProvider  router={appRouter}/>
+  
+   
+   </>
+
   );
 };
 
