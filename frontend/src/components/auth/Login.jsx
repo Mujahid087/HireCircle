@@ -5,7 +5,13 @@ import { Input } from '../ui/input'
 
 import { RadioGroup } from "../ui/radio-group"
 import { Button } from '../ui/button'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
+import { USER_API_END_POINT } from '../../../utils/constant'
+import axios from 'axios'
+import { useDispatch, useSelector } from 'react-redux'
+import { setLoading } from '@/redux/authSlice'
+import { Loader, Loader2 } from 'lucide-react'
 
 
 function Login() {
@@ -14,15 +20,37 @@ function Login() {
         password: "",
         role: "",
     })
+    const {loading}=useSelector(store=>store.auth)
+    const navigate = useNavigate();
+    const dispatch=useDispatch()
 
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value })
     }
     
-    const submitHandler=async (e) =>{
+    const submitHandler = async (e) => {
         e.preventDefault();
-        console.log(input)
-    }
+        try {
+            dispatch(setLoading(true))
+            const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
+                headers: {
+                    "Content-Type": "application/json", // Fixed Content-Type
+                },
+                withCredentials: true
+            });
+    
+            if (res.data.success) {
+                navigate("/");
+                toast.success(res.data.message); // Fixed typo
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message || "An error occurred"); // Fixed error handling
+        }finally{
+            dispatch(setLoading(false))
+        }
+    };
+    
     return (
         <div>
             <Navbar />
@@ -79,7 +107,10 @@ function Login() {
                             </div>
                         </RadioGroup>
                     </div>
-                    <Button type="submit" className="w-full my-4">Login</Button>
+                    {
+                        loading ? <Button className="w-full my-4"><Loader2 className='mr-2 h-4 w-4 animate-spin'/>please wait</Button> : <Button type="submit" className="w-full my-4">Login</Button>
+                    }
+                    
                     <span>Don't have an account ? <Link to="/signup" className='text-blue-600'>Signup</Link></span>
                 </form>
             </div>

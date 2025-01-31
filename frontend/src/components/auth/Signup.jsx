@@ -5,7 +5,10 @@ import { Input } from '../ui/input'
 
 import { RadioGroup } from "../ui/radio-group"
 import { Button } from '../ui/button'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { USER_API_END_POINT } from '../../../utils/constant'
+import axios from 'axios'
+import { toast } from 'sonner'
 
 
 function Signup() {
@@ -18,16 +21,46 @@ function Signup() {
         file: ""
     })
 
+    const navigate = useNavigate();
+
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value })
     }
     const changeFileHandler = (e) => {
         setInput({ ...input, file: e.target.files?.[0] })
     }
-    const submitHandler=async (e) =>{
+
+    const submitHandler = async (e) => {
         e.preventDefault();
-        console.log(input)
-    }
+        const formData = new FormData();
+        formData.append('fullname', input.fullname);
+        formData.append('email', input.email);
+        formData.append('phoneNumber', input.phoneNumber);
+        formData.append('password', input.password);
+        formData.append('role', input.role);
+    
+        if (input.file) {
+            formData.append("file", input.file);
+        }
+    
+        try {
+            const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+                withCredentials: true
+            });
+    
+            if (res.data.success) {
+                navigate("/login");
+                toast.success(res.data.message);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || "An error occurred");
+        }
+    };
+    
     return (
         <div>
             <Navbar />
@@ -37,7 +70,6 @@ function Signup() {
                     <div className='my-2'>
                         <Label>
                             Full Name
-
                         </Label>
                         <Input
                             type="text"
