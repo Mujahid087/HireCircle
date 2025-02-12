@@ -150,7 +150,7 @@ export const updateProfile = async (req, res) => {
                 success: false
             })
         }
-        // updating data
+
         if(fullname) user.fullname = fullname
         if(email) user.email = email
         if(phoneNumber)  user.phoneNumber = phoneNumber
@@ -159,8 +159,8 @@ export const updateProfile = async (req, res) => {
       
         // resume comes later here...
         if(cloudResponse){
-            user.profile.resume = cloudResponse.secure_url // save the cloudinary url
-            user.profile.resumeOriginalName = file.originalname // Save the original file name
+            user.profile.resume = cloudResponse.secure_url 
+            user.profile.resumeOriginalName = file.originalname 
         }
 
 
